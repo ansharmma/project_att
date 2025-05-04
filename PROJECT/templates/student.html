@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Portal - Attendance</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .student-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            padding: 20px;
+        }
+        .attendance-calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            margin: 20px 0;
+        }
+        .calendar-day {
+            padding: 10px;
+            text-align: center;
+            border-radius: 5px;
+        }
+        .present {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .absent {
+            background-color: #f44336;
+            color: white;
+        }
+        .stats-card {
+            text-align: center;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        .metric-value {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <!-- Back Button -->
+    <a href="{{ url_for('index') }}?data=loaded" class="btn btn-primary back-button">
+        <i class="fas fa-arrow-left"></i> Back to Data View
+    </a>
+
+    <div class="container py-4">
+        <div class="row">
+            <!-- Student Info -->
+            <div class="col-md-4">
+                <div class="student-card">
+                    <h3>{{ student_data.name }}</h3>
+                    <div class="stats-card bg-primary text-white">
+                        <h5>Overall Attendance</h5>
+                        <div class="metric-value">{{ "%.1f"|format(student_data.attendance_rate) }}%</div>
+                    </div>
+                    <div class="stats-card bg-success text-white">
+                        <h5>Present Days</h5>
+                        <div class="metric-value">{{ student_data.total_present }}</div>
+                    </div>
+                    <div class="stats-card bg-danger text-white">
+                        <h5>Absent Days</h5>
+                        <div class="metric-value">{{ student_data.total_absent }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Attendance Calendar -->
+            <div class="col-md-8">
+                <div class="student-card">
+                    <h4>Attendance Calendar</h4>
+                    <div class="attendance-calendar">
+                        {% for date, status in student_data.attendance_calendar.items() %}
+                        <div class="calendar-day {{ 'present' if status == 'P' else 'absent' }}">
+                            {{ date }}
+                            <div>{{ status }}</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Monthly Performance -->
+                <div class="student-card">
+                    <h4>Monthly Performance</h4>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Month</th>
+                                    <th>Attendance Rate</th>
+                                    <th>Present Days</th>
+                                    <th>Absent Days</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for month, data in student_data.monthly_performance.items() %}
+                                <tr>
+                                    <td>{{ month }}</td>
+                                    <td>{{ "%.1f"|format(data.rate) }}%</td>
+                                    <td>{{ data.present }}</td>
+                                    <td>{{ data.absent }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+</body>
+</html> 
